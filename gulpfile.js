@@ -20,7 +20,6 @@ let changed = require('gulp-changed');
 let runSequence = require('run-sequence');
 let karmaServer = require('karma').server;
 let merge = require('merge-stream');
-let Stream = require('stream');
 
 const CONFIGS = [require('./gulp.config')];
 
