@@ -1,2 +1,2 @@
-# gulp-start-up
-My preferred gulp setup with TypeScript
+# Gulp Start Up
+Personal gulp setup with TypeScript
