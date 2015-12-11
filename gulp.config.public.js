@@ -1,3 +1,4 @@
+// Example config
 module.exports = {
     app: { baseName: 'public' },
     sass: {
