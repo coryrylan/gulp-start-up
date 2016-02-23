@@ -1,6 +1,9 @@
-// Example Config
 module.exports = {
-    app: { baseName: 'public' },
+    app: { baseName: 'account' },
+    server: {
+        baseDir: './',
+        proxy: ''
+    },
     sass: {
         src: ['./styles/**/*.scss'],
         lintSrc: [
@@ -11,8 +14,7 @@ module.exports = {
         ]
     },
     typescript: {
-        src: ['./app/**/*.ts', './app/**/*.spec.ts'],
-        typings: ['./typings/**/*.d.ts']
+        src: ['./app/**/*.ts', './app/**/*.spec.ts']
     },
     images: {
         src: ['assets/images/**/*']
@@ -27,25 +29,24 @@ module.exports = {
     },
     javascript: {
         src: [
-        // Need core.js here
+            // Libs
+            './assets/javascript/firebase/firebase-client.js',
+            './assets/javascript/notification/notification.js',
         
-        // Polyfills
-        './assets/javascript/notification/notification.js',
-        
-        // Libs
-        './assets/javascript/firebase/firebase-client.js',
-        
-        // Angular 2 Deps
-        './node_modules/systemjs/dist/system.src.js',
-        './node_modules/angular2/bundles/angular2.dev.js',
-        './node_modules/angular2/bundles/router.dev.js',
-        './node_modules/angular2/bundles/http.dev.js'
+            // Angular 2 Deps
+            './node_modules/es6-shim/es6-shim.js',
+            './node_modules/angular2/bundles/angular2-polyfills.js',
+            './node_modules/systemjs/dist/system.src.js',
+            './node_modules/rxjs/bundles/Rx.js',
+            './node_modules/angular2/bundles/angular2.dev.js',
+            './node_modules/angular2/bundles/router.dev.js',
+            './node_modules/angular2/bundles/http.dev.js'
         ]
     },
     buildLocations: {
         html: './build/account/app/',
         index: './',
-        typescript: './build/account/app/',
+        typescript: './build/account/',
         css: './build/account/styles/',
         img: './build/account/assets/images/',
         js: './build/account/assets/javascript/',
