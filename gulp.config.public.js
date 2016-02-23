@@ -1,6 +1,9 @@
-// Example config
 module.exports = {
-    app: { baseName: 'public' },
+    app: { baseName: 'app' },
+    server: {
+        baseDir: './',
+        proxy: ''
+    },
     sass: {
         src: ['./styles/**/*.scss'],
         lintSrc: [
@@ -11,8 +14,7 @@ module.exports = {
         ]
     },
     typescript: {
-        src: ['./app/**/*.ts', './app/**/*.spec.ts'],
-        typings: ['./typings/**/*.d.ts']
+        src: ['./app/**/*.ts', './app/**/*.spec.ts']
     },
     images: {
         src: ['assets/images/**/*']
@@ -27,29 +29,28 @@ module.exports = {
     },
     javascript: {
         src: [
-        // Need core.js here
+            // Libs
+            './assets/javascript/firebase/firebase-client.js',
+            './assets/javascript/notification/notification.js',
         
-        // Polyfills
-        './assets/javascript/notification/notification.js',
-        
-        // Libs
-        './assets/javascript/firebase/firebase-client.js',
-        
-        // Angular 2 Deps
-        './node_modules/systemjs/dist/system.src.js',
-        './node_modules/angular2/bundles/angular2.dev.js',
-        './node_modules/angular2/bundles/router.dev.js',
-        './node_modules/angular2/bundles/http.dev.js'
+            // Angular 2 Deps
+            './node_modules/es6-shim/es6-shim.js',
+            './node_modules/angular2/bundles/angular2-polyfills.js',
+            './node_modules/systemjs/dist/system.src.js',
+            './node_modules/rxjs/bundles/Rx.js',
+            './node_modules/angular2/bundles/angular2.dev.js',
+            './node_modules/angular2/bundles/router.dev.js',
+            './node_modules/angular2/bundles/http.dev.js'
         ]
     },
     buildLocations: {
-        html: './build/public/app/',
+        html: './build/base/app/',
         index: './',
-        typescript: './build/public/app/',
-        css: './build/public/styles/',
-        img: './build/public/assets/images/',
-        js: './build/public/assets/javascript/',
-        fonts: './build/public/assets/fonts/',
-        clean: './build/public/**/*'
+        typescript: './build/base/',
+        css: './build/base/styles/',
+        img: './build/base/assets/images/',
+        js: './build/base/assets/javascript/',
+        fonts: './build/base/assets/fonts/',
+        clean: './build/base/**/*'
     }
 }
