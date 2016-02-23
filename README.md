@@ -1,2 +1,2 @@
 # Gulp Start Up
-Personal gulp setup with TypeScript
+Gulp setup example with TypeScript for Angular 2 apps
