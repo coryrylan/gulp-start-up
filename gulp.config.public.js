@@ -14,7 +14,13 @@ module.exports = {
         ]
     },
     typescript: {
-        src: ['./app/**/*.ts', './app/**/*.spec.ts']
+        src: ['./app/**/*.ts', './app/**/*.spec.ts'],
+        typings: [
+            'typings/**',
+            '!node_modules',
+            '!typings/browser.d.ts',
+            '!typings/browser/**'
+        ]
     },
     images: {
         src: ['assets/images/**/*']
