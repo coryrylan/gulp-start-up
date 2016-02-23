@@ -85,14 +85,17 @@ gulp.task('_ts-lint', 'Lint TypeScript for style & syntax errors', () => {
 });
 
 gulp.task('_build.typescript', 'Build TypeScript and compile out ES5 JavaScript', () => {
-    let tsProject = tsc.createProject('tsconfig.json', {
-        typescript: require('typescript')
-    });
-
     let tasks = CONFIGS.map(config => {
-        let tsResult = tsProject.src().pipe(tsc(tsProject));
-
-        return tsResult.js
+        return gulp.src(config.typescript.src.concat(config.typescript.typings))
+                      .pipe(tsc({
+                          typescript: require('typescript'),
+                          target: 'ES5',
+                          declarationFiles: false,
+                          experimentalDecorators: true,
+                          emitDecoratorMetadata: true,
+                          module: 'commonjs',
+                          moduleResolution: 'node'
+                      }))
                       .pipe(isProd() ? uglify() : gulpUtil.noop())
                       .pipe(gulp.dest(config.buildLocations.typescript))
                       .on('error', swallowError);
