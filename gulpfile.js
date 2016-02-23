@@ -1,3 +1,4 @@
+/// <binding AfterBuild='build--dev' Clean='clean' ProjectOpened='watch' />
 'use strict';
 
 let gulp = require('gulp-help')(require('gulp'), { hideDepsMessage: true, afterPrintCallback: cliNotes });
@@ -20,6 +21,7 @@ let changed = require('gulp-changed');
 let runSequence = require('run-sequence');
 let karmaServer = require('karma').server;
 let merge = require('merge-stream');
+let Stream = require('stream');
 
 const CONFIGS = [require('./gulp.config')];
 
@@ -76,24 +78,21 @@ gulp.task('_test', 'Run unit tests for build', (done) => {
 
 gulp.task('_ts-lint', 'Lint TypeScript for style & syntax errors', () => {
     let tasks = CONFIGS.map(config => {
-        return gulp.src(config.typescript.src).pipe(tslint()).pipe(tslint.report('prose').on('error', () => {}));
+        return gulp.src(config.typescript.src).pipe(tslint()).pipe(tslint.report('prose').on('error', () => { }));
     });
 
     return merge(tasks);
 });
 
 gulp.task('_build.typescript', 'Build TypeScript and compile out ES5 JavaScript', () => {
+    let tsProject = tsc.createProject('tsconfig.json', {
+        typescript: require('typescript')
+    });
+
     let tasks = CONFIGS.map(config => {
-        return gulp.src(config.typescript.src.concat(config.typescript.typings))
-                      .pipe(tsc({
-                          typescript: require('typescript'),
-                          target: 'ES5',
-                          declarationFiles: false,
-                          experimentalDecorators: true,
-                          emitDecoratorMetadata: true,
-                          module: 'commonjs',
-                          moduleResolution: 'node'
-                      }))
+        let tsResult = tsProject.src().pipe(tsc(tsProject));
+
+        return tsResult.js
                       .pipe(isProd() ? uglify() : gulpUtil.noop())
                       .pipe(gulp.dest(config.buildLocations.typescript))
                       .on('error', swallowError);
@@ -172,12 +171,19 @@ gulp.task('_build.fonts', 'Move fonts to build', () => {
 });
 
 gulp.task('_browser-sync', 'Start up browser sync localhost', () => {
-    browserSync.init({
-        server: {
-            baseDir: "./"
-        },
-        logFileChanges: false
-    });
+    if (CONFIGS[0].server.proxy) {
+        browserSync.init({
+            proxy: CONFIGS[0].server.proxy,
+            logFileChanges: false
+        });
+    } else {
+        browserSync.init({
+            server: {
+                baseDir: CONFIGS[0].server.baseDir
+            },
+            logFileChanges: false
+        });
+    }
 });
 
 gulp.task('_browser-sync-reload', 'Reload browsers connected to browser sync', () => {
@@ -192,8 +198,8 @@ gulp.task('_update.version', 'Create version for CSS/JS references', () => {
         let sources = gulp.src([].concat(jsFiles, cssFiles), { read: false });
 
         return target
-                .pipe(inject(sources, { transform: injectVersion }))
-                .pipe(replace(/<app-version>/, getVersion()))
+                .pipe(inject(sources, { transform: injectVersion, addRootSlash: false }))
+                .pipe(replace(/<app-version>/g, getVersion()))
                 .pipe(gulp.dest(config.buildLocations.index));
     });
 
@@ -205,8 +211,9 @@ gulp.task('_update.template-version', 'Create version for HTML template referenc
         return gulp.src(config.html.templateUrlReferences)
                 // Update referenced static template versions
                 .pipe(replace(new RegExp(`templateUrl: '${config.app.baseName}/`), `templateUrl: '${config.buildLocations.html}`))
+                .pipe(replace(/wwwroot\//g, ''))
                 .pipe(replace(/\.html/g, '.html?v=' + getVersion()))
-                .pipe(gulp.dest(config.buildLocations.typescript));
+                .pipe(gulp.dest(config.buildLocations.html));
     });
 
     return merge(tasks);
@@ -221,7 +228,8 @@ function build(done) {
 }
 
 function injectVersion(filepath) {
-    arguments[0] = filepath + '?v=' + getVersion();
+    // remove web root path and then add version 
+    arguments[0] = filepath.replace(/wwwroot\//g, '') + '?v=' + getVersion();
     return inject.transform.apply(inject.transform, arguments);
 }
 
