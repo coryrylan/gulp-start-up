@@ -215,7 +215,7 @@ gulp.task('_update.template-version', 'Create version for HTML template referenc
                 // Update referenced static template versions
                 .pipe(replace(new RegExp(`templateUrl: '${config.app.baseName}/`), `templateUrl: '${config.buildLocations.html}`))
                 .pipe(replace(/wwwroot\//g, ''))
-                .pipe(replace(/\.html/g, '.html?v=' + getVersion()))
+                .pipe(replace(/\.html'/g, '.html?v=' + getVersion() + '\''))
                 .pipe(gulp.dest(config.buildLocations.html));
     });
 
